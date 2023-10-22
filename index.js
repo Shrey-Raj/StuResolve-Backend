@@ -14,8 +14,8 @@ app.use(cors());
 const PORT = process.env.PORT || 3005 ;
 
 mongoose.set("strictQuery", false);
-const MONGO_URI = 'mongodb+srv://shreyraj:mongo12345@cluster0.kdadybz.mongodb.net/' ;
-// const MONGO_URI = process.env.MONGO_URI;
+// const MONGO_URI = 'mongodb+srv://shreyraj:mongo12345@cluster0.kdadybz.mongodb.net/' ;
+const MONGO_URI = process.env.MONGO_URI;
 
 const connectDB = async () => {
   try {
