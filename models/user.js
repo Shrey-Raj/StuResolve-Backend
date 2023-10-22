@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   name: { type: String, required: [true, "plz give name "] },
+  image : {type : String } , 
   email: { type: String, required: true, unique: true },
   branch: { type: String, required: true },
   gradYear: { type: Number, required: true },

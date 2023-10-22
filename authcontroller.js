@@ -5,7 +5,7 @@ const MongoClient = require("mongodb").MongoClient;
 function authController() {
   return {
     async postRegister(req, res) {
-      const { name, email, branch, password, gradYear, confirmPass } = req.body;
+      const { name, email, image, branch, password, gradYear, confirmPass } = req.body;
       try {
         const emailExists = await User.countDocuments({ email });
 
@@ -30,6 +30,7 @@ function authController() {
           const registerUser = new User({
             name,
             email,
+            image,
             branch,
             gradYear,
             password: `${hashedPassword}`,
@@ -41,6 +42,7 @@ function authController() {
             messsage: "Successfully registered",
             name,
             email,
+            image
           });
         }
       } catch (err) {
