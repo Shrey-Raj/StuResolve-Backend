@@ -11,8 +11,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 3005;
-
 
 mongoose.set("strictQuery", false);
 // const MONGO_URI = 'mongodb+srv://shreyraj:mongo12345@cluster0.kdadybz.mongodb.net/' ;
@@ -21,7 +19,6 @@ const MONGO_URI = process.env.MONGO_URI;
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(MONGO_URI);
-
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.log(error);
