@@ -18,8 +18,10 @@ module.exports = User;
 //demo data
 // {
 //     "name": "Shrey Raj",
-//     "email": "hello@gmail.com",
 //     "branch":"Computer Science",
+//     "email": "hello@gmail.com",
+//     "image":"https://imgr.com/4221"
 //     "gradYear":2025,
 //     "password": "laptop0000",
+//     "confirmPass" : "laptop0000"
 // }

@@ -42,7 +42,7 @@ function authController() {
             messsage: "Successfully registered",
             name,
             email,
-            image
+            image,
           });
         }
       } catch (err) {
