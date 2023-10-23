@@ -1,10 +1,12 @@
+require("dotenv").config();
 const User = require("./models/user.js");
 const bcrypt = require("bcrypt");
-const MongoClient = require("mongodb").MongoClient;
+const jwt = require("jsonwebtoken"); 
 
 function authController() {
   return {
     async postRegister(req, res) {
+
       const { name, email, image, branch, password, gradYear, confirmPass } = req.body;
       try {
         const emailExists = await User.countDocuments({ email });
@@ -36,19 +38,27 @@ function authController() {
             password: `${hashedPassword}`,
           });
 
-          const registered = await registerUser.save();
+        const registered = await registerUser.save();
+          
+        const expiresIn = 3 * 24 * 60 * 60;
+        const token = jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn });
 
           return res.status(200).json({
             messsage: "Successfully registered",
-            name,
-            email,
-            image,
+            user: {
+              name,
+              email,
+              image,
+              branch,
+              gradYear,
+            },
+            token: token,
           });
         }
       } catch (err) {
         console.log(err);
         return res.status(404).json({
-          message: "Some error Occured in registering the user",
+          message: `Some error Occured in registering the user  - ${err}`,
           name,
           email,
         });
@@ -59,12 +69,11 @@ function authController() {
       const pass = req.body.password;
 
       try {
-        const user = await User.findOne({ email: useremail }).select(
-          "password name"
-        );
+        const user = await User.findOne({ email: useremail });
+
 
         if (!user) {
-          console.log("User not found");
+          console.log("User Not Found");
           return res.status(404).json({
             message: "User Not Found ",
             email: useremail,
@@ -75,10 +84,20 @@ function authController() {
         const isMatched = await bcrypt.compare(pass, valid_pass);
 
         if (isMatched === true) {
-          return res.status(200).json({
-            message: "Successfully Logged IN",
+        const expiresIn = 3*24*60*60 ;
+        const token = jwt.sign({ email: useremail }, process.env.SECRET_KEY, { expiresIn });
+
+        return res.status(200).json({
+          message: "Successfully Logged In",
+          user: {
+            name: user.name, 
             email: useremail,
-          });
+            image: user.image,
+            branch: user.branch,
+            gradYear: user.gradYear,
+          },
+          token: token,
+        });
         } else {
           return res.status(401).json({
             message: "Invalid Email or Password",
@@ -88,7 +107,7 @@ function authController() {
       } catch (err) {
         console.log(err, "Error in Logging In");
         return res.status(404).json({
-          message: "Some error Occured in Logging the user",
+          message: `Some error Occured in Logging the user - ${err}`,
           email: useremail,
         });
       }

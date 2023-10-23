@@ -15,13 +15,20 @@ const User = new mongoose.model("User", UserSchema);
 
 module.exports = User;
 
-//demo data
+//demo data for registration
 // {
 //     "name": "Shrey Raj",
 //     "branch":"Computer Science",
 //     "email": "hello@gmail.com",
-//     "image":"https://imgr.com/4221"
+//     "image":"https://imgr.com/4221",
 //     "gradYear":2025,
-//     "password": "laptop0000",
-//     "confirmPass" : "laptop0000"
+//     "password": "laptop",
+//     "confirmPass" : "laptop"
+// }
+
+
+// for login : 
+// {
+// "email" : "hello@gmail.com",
+// "password" : "123"
 // }
