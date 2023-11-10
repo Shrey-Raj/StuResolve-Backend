@@ -1,13 +1,14 @@
 require("dotenv").config();
 const User = require("./models/user.js");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser"); // Import cookie-parser
 
 function authController() {
   return {
     async postRegister(req, res) {
-
-      const { name, email, image, branch, password, gradYear, confirmPass } = req.body;
+      const { name, email, image, branch, password, gradYear, confirmPass } =
+        req.body;
       try {
         const emailExists = await User.countDocuments({ email });
 
@@ -38,10 +39,17 @@ function authController() {
             password: `${hashedPassword}`,
           });
 
-        const registered = await registerUser.save();
-          
-        const expiresIn = 3 * 24 * 60 * 60;
-        const token = jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn });
+          const registered = await registerUser.save();
+
+          const expiresIn = 3 * 24 * 60 * 60;
+          const token = jwt.sign({ email }, process.env.SECRET_KEY, {
+            expiresIn,
+          });
+
+          res.cookie("jwt", token, {
+            httpOnly: true, // Make the cookie accessible only via HTTP
+            maxAge: expiresIn * 1000, // Expiration time in milliseconds
+          });
 
           return res.status(200).json({
             messsage: "Successfully registered",
@@ -71,7 +79,6 @@ function authController() {
       try {
         const user = await User.findOne({ email: useremail });
 
-
         if (!user) {
           console.log("User Not Found");
           return res.status(404).json({
@@ -84,20 +91,31 @@ function authController() {
         const isMatched = await bcrypt.compare(pass, valid_pass);
 
         if (isMatched === true) {
-        const expiresIn = 3*24*60*60 ;
-        const token = jwt.sign({ email: useremail }, process.env.SECRET_KEY, { expiresIn });
+          const expiresIn = 3 * 24 * 60 * 60;
+          const token = jwt.sign(
+            { email: user?.email, id: user?._id },
+            process.env.SECRET_KEY,
+            {
+              expiresIn,
+            }
+          );
 
-        return res.status(200).json({
-          message: "Successfully Logged In",
-          user: {
-            name: user.name, 
-            email: useremail,
-            image: user.image,
-            branch: user.branch,
-            gradYear: user.gradYear,
-          },
-          token: token,
-        });
+          res.cookie("jwt", token, {
+            httpOnly: true, // Make the cookie accessible only via HTTP
+            maxAge: expiresIn * 1000, // Expiration time in milliseconds
+          });
+
+          return res.status(200).json({
+            message: "Successfully Logged In",
+            user: {
+              name: user.name,
+              email: useremail,
+              image: user.image,
+              branch: user.branch,
+              gradYear: user.gradYear,
+            },
+            token: token,
+          });
         } else {
           return res.status(401).json({
             message: "Invalid Email or Password",
